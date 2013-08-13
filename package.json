@@ -11,6 +11,7 @@
   "license": "BSD",
   "readmeFilename": "README.md",
   "dependencies": {
-    "ws": "~0.4.27"
+    "ws": "~0.4.27",
+    "express": "~3.3.5"
   }
 }
