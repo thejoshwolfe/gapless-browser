@@ -1,0 +1,16 @@
+{
+  "name": "gapless-browser",
+  "version": "0.0.0",
+  "description": "proof of concept for gapless mp3 playback between node.js and web audio",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/thejoshwolfe/gapless-browser.git"
+  },
+  "author": "Josh Wolfe <thejoshwolfe@gmail.com>",
+  "license": "BSD",
+  "readmeFilename": "README.md",
+  "dependencies": {
+    "ws": "~0.4.27"
+  }
+}
