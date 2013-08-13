@@ -47,7 +47,11 @@ function onSocketConnection(socket) {
         console.log("format", format);
         vd.pipe(ve);
         ve.pipe(oe.stream());
-        oe.pipe(new SocketStreamWriter(socket));
+        var bufferer = new Bufferer();
+        oe.pipe(bufferer);
+        oe.on('end', function() {
+          socket.send(Buffer.concat(bufferer.chunks));
+        });
       });
       stream.pipe(vd);
     });
@@ -88,4 +92,15 @@ function SocketStreamWriter(socket) {
 
 SocketStreamWriter.prototype._write = function(chunk, encoding, callback) {
   this.socket.send(chunk, callback);
+}
+
+util.inherits(Bufferer, Writable);
+function Bufferer() {
+  Writable.call(this);
+  this.chunks = [];
+}
+
+Bufferer.prototype._write = function(chunk, encoding, callback) {
+  this.chunks.push(chunk);
+  callback();
 }
