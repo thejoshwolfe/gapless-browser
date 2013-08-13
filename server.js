@@ -2,10 +2,16 @@ var express = require('express');
 var ws = require('ws');
 var fs = require('fs');
 var path = require('path');
+var fs = require('fs');
 var http = require('http');
-
+var ogg = require('ogg');
+var vorbis = require('vorbis-superjoe');
+var util = require('util');
+var Writable = require('stream').Writable;
 var app = express();
 var server = http.createServer(app);
+
+var TEST_OGG = path.join(__dirname, "Danse Macabre.ogg");
 
 // users may never send a web socket message longer than this
 var MAX_SOCKET_MSG_LEN = 500;
@@ -32,10 +38,20 @@ function onSocketConnection(socket) {
   socket.on('message', onMessage);
 
   function gimmeSomeOgg(msg) {
-    fs.readFile("Danse Macabre.ogg", function(err, buffer) {
-      if (err) return console.error(err);
-      socket.send(buffer);
+    var od = new ogg.Decoder();
+    var oe = new ogg.Encoder();
+    var vd = new vorbis.Decoder();
+    var ve = new vorbis.Encoder();
+    od.on('stream', function(stream) {
+      vd.on('format', function(format) {
+        console.log("format", format);
+        vd.pipe(ve);
+        ve.pipe(oe.stream());
+        oe.pipe(new SocketStreamWriter(socket));
+      });
+      stream.pipe(vd);
     });
+    fs.createReadStream(TEST_OGG).pipe(od);
   }
 
   function onMessage(data, flags) {
@@ -62,4 +78,14 @@ function onSocketConnection(socket) {
     }
     handler(msg.value);
   }
+}
+
+util.inherits(SocketStreamWriter, Writable);
+function SocketStreamWriter(socket) {
+  Writable.call(this);
+  this.socket = socket;
+}
+
+SocketStreamWriter.prototype._write = function(chunk, encoding, callback) {
+  this.socket.send(chunk, callback);
 }

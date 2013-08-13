@@ -12,6 +12,8 @@
   "readmeFilename": "README.md",
   "dependencies": {
     "ws": "~0.4.27",
-    "express": "~3.3.5"
+    "express": "~3.3.5",
+    "ogg": "~1.1.1",
+    "vorbis-superjoe": "~0.1.1"
   }
 }
