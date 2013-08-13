@@ -1,7 +1,9 @@
 var express = require('express');
 var ws = require('ws');
+var fs = require('fs');
 var path = require('path');
 var http = require('http');
+
 var app = express();
 var server = http.createServer(app);
 
@@ -30,7 +32,10 @@ function onSocketConnection(socket) {
   socket.on('message', onMessage);
 
   function gimmeSomeOgg(msg) {
-    socket.send(new Buffer("aoeu"));
+    fs.readFile("Danse Macabre.ogg", function(err, buffer) {
+      if (err) return console.error(err);
+      socket.send(buffer);
+    });
   }
 
   function onMessage(data, flags) {
